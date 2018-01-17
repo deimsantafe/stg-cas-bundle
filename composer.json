@@ -1,0 +1,35 @@
+{
+    "name": "stg/cas-bundle",
+    "type": "symfony-bundle",
+    "description": "Bundle de Central Authentication Service",
+    "keywords": ["CAS", "Authentication", "STG"],
+    "homepage": "http://www.santafe.gov.ar",
+
+    "authors": [
+        {
+            "name": "Mozzati, Carlos",
+            "homepage": "http://www.santafe.gov.ar",
+            "email": "cmozzati@santafe.gov.ar" 
+        },
+        {
+            "name": "Zonta, Claudio",
+            "homepage": "http://www.santafe.gov.ar",
+            "email": "czonta@santafe.gov.ar" 
+        }
+        
+    ],
+
+    "require": {
+        "php":                      ">=5.5.9",
+        "symfony/framework-bundle": ">=3.4"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "STG\\DEIM\\Security\\Bundle\\CasBundle": ""
+        }
+    },
+
+    "target-dir": "STG/DEIM/Security/Bundle/CasBundle"
+    
+}
