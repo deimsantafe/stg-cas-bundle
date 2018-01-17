@@ -16,7 +16,7 @@ Installation
         "repositories": [
             {
               "type": "composer",
-              "url": "http://app.santafe.gov.ar/archivist"
+              "url": "https://github.com/deimsantafe/stg-cas-bundle"
             }
          ],
 
