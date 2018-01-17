@@ -15,7 +15,7 @@ Installation
 
         "repositories": [
             {
-              "type": "composer",
+              "type": "git",
               "url": "https://github.com/deimsantafe/stg-cas-bundle"
             }
          ],
