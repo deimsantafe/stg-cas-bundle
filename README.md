@@ -6,50 +6,9 @@ Central Authentication Service en Symfony 2 - Basado en Rizeway Bundle
 Installation
 ---------------
 
-1). Agregar el repositorio en donde se encuentra el bundle a instalar. Si no 
-    existe la clave "repositories" debe ser creada en el primer nivel del 
-    archivo composer.json.
+1). Instalación desde packagist.org: https://packagist.org/packages/stgbundle/cas-bundle
 
-    {
-    ...
-
-        "repositories": [
-            {
-              "type": "git",
-              "url": "https://github.com/deimsantafe/stg-cas-bundle"
-            }
-         ],
-
-    ...
-    }
-
-2). Agregar en el archivo composer.json el nombre y la versión del bundle:
-
-    {
-        ...
-
-        "require": {
-            ...
-
-            "stg/cas-bundle": "4.0"
-
-            ...
-        }
-
-        ...
-    }
-
-    Versiones:
-        - dev-trunk (rama principal de desarrollo, no utilizar en producción)
-        - 1.0
-        - 1.1
-        - 1.2
-        - 2.0
-        - 2.0.1
-        - 3.0 - Se agrega soporte para CAS 3.0
-        - 3.1 - Se agrega envio de parámetros al failure_path
-        - 3.2 - Se quitan parámetros de usuario y exception a failure_path
-        - 4.0 - Se agrega soporte para Symfony 3.4
+    composer require stgbundle/cas-bundle
 
 3). Registrar el bundle en el archivo AppKernel.php:
 
