@@ -1,5 +1,5 @@
 {
-    "name": "stg/cas-bundle",
+    "name": "stgbundle/cas-bundle",
     "type": "symfony-bundle",
     "description": "Bundle de Central Authentication Service",
     "keywords": ["CAS", "Authentication", "STG"],
