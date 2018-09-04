@@ -83,7 +83,6 @@ Installation
                 logout:
                     path:   _demo_logout
                     target: _demo
-                    invalidate_session: false
 
 7). Agregar las rutas vacias para login check y logout en app/config/routing.yml
    
