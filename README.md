@@ -32,10 +32,10 @@ Installation
 
     cas:
         # desarrollo/testing
-        url: https://dsso.santafe.gov.ar/service-auth
-        server: https://dsso.santafe.gov.ar/service-auth # (only if different from the url, for server to server requests)
+        url: https://dsso.santafe.gob.ar/service-auth # Para testing https://tsso.santafe.gov.ar/service-auth
+        server: https://dsso.santafe.gob.ar/service-auth # Para testing https://tsso.santafe.gov.ar/service-auth
         cert: false # false to bypass (opcional)
-        username_attribute: user  # (opcional)
+        username_attribute: cuil
         proxy: false # if you want to active the proxy cas mode (opcional)
 
 
