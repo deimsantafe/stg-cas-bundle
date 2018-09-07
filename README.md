@@ -10,7 +10,7 @@ Installation
 
     composer require stgbundle/cas-bundle
 
-3). Registrar el bundle en el archivo AppKernel.php:
+2). Registrar el bundle en el archivo AppKernel.php:
 
     public function registerBundles()
     {
@@ -28,7 +28,7 @@ Installation
     }
 
 
-4). Agregar en el archivo config.yml la configuración del endpoint a utilizar:
+3). Agregar en el archivo config.yml la configuración del endpoint a utilizar:
 
     cas:
         # desarrollo/testing
@@ -39,13 +39,13 @@ Installation
         proxy: false # if you want to active the proxy cas mode (opcional)
 
 
-5). Instalar y/o actualizar el bundle:
+4). Instalar y/o actualizar el bundle:
 
     $ composer install
     $ composer update
 
 
-6). Ajustar la configuración de seguridad (security.yml)
+5). Ajustar la configuración de seguridad (security.yml)
 
     providers:
 	in_memory:
@@ -55,7 +55,7 @@ Installation
 
 # Para trabajar con entidades, definir el siguiente provider en lugar del anterior
         #usuarios:
-        #   entity: { class: STG\DEIM\UsuarioBundle\Entity\Usuario, property: nombre }
+        #   entity: { class: STG\DEIM\UsuarioBundle\Entity\Usuario, property: cuil }
 
 
 # Definir los firewalls para las áreas seguras y públicas. 
@@ -84,7 +84,7 @@ Installation
                     path:   _demo_logout
                     target: _demo
 
-7). Agregar las rutas vacias para login check y logout en app/config/routing.yml
+6). Agregar las rutas vacias para login check y logout en app/config/routing.yml
    
     _demo_login:
         path: /demo/secured/loginCAS 
@@ -94,7 +94,7 @@ Installation
         path: /demo/secured/logoutCAS
         defaults: 
     
-8). Agregar la ruta del failure_path en app/config/routing.yml
+7). Agregar la ruta del failure_path en app/config/routing.yml
 
     _demo_failure:
         path: /failure
