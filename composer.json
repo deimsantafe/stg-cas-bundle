@@ -20,8 +20,8 @@
     ],
 
     "require": {
-        "php":                      ">=5.5.9",
-        "symfony/framework-bundle": ">=3.4"
+        "php":                      ">=5.3.9",
+        "symfony/framework-bundle": ">=2.8"
     },
 
     "autoload": {

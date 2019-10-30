@@ -15,7 +15,7 @@ Installation
 
         "repositories": [
             {
-              "type": "git",
+	          "type": "git",
               "url": "https://github.com/deimsantafe/stg-cas-bundle"
             }
          ],
@@ -31,7 +31,7 @@ Installation
         "require": {
             ...
 
-            "stg/cas-bundle": "4.0"
+            "stg/cas-bundle": "3.2"
 
             ...
         }
@@ -48,8 +48,7 @@ Installation
         - 2.0.1
         - 3.0 - Se agrega soporte para CAS 3.0
         - 3.1 - Se agrega envio de parámetros al failure_path
-        - 3.2 - Se quitan parámetros de usuario y exception a failure_path
-        - 4.0 - Se agrega soporte para Symfony 3.4
+        - 3.2 - Se quitan parámetros de usuario y exception al failure_path
 
 3). Registrar el bundle en el archivo AppKernel.php:
 
@@ -108,7 +107,7 @@ Installation
                 security: false
 
             public:
-                pattern: ^/failure
+                pattern: ^/failure/
                 security: false
 
             secured_area:
@@ -129,20 +128,19 @@ Installation
 7). Agregar las rutas vacias para login check y logout en app/config/routing.yml
    
     _demo_login:
-        path: /demo/secured/loginCAS 
-        defaults:
+        pattern: /demo/secured/loginCAS
+        defaults: 
 
     _demo_logout:
-        path: /demo/secured/logoutCAS
+        pattern: /demo/secured/logoutCAS
         defaults: 
     
 8). Agregar la ruta del failure_path en app/config/routing.yml
 
     _demo_failure:
-        path: /failure
-        defaults: { _controller: AppBundle:MyController:failure }
-        
+        pattern: /failure
+        defaults: { _controller: AppBundle:MyController:failure }        
 
 o en el controlador
 
-    @Route("/failure", name="failure_path")
+    @Route("/failure", name="failure_path" )

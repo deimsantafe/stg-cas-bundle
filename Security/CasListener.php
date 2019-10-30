@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
-use Monolog\Logger;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -96,7 +95,7 @@ class CasListener implements ListenerInterface
      * @param $providerKey
      * @param AuthenticationSuccessHandlerInterface $successHandler
      * @param AuthenticationFailureHandlerInterface $failureHandler
-     * @param Logger|null $logger
+     * @param LoggerInterface|null $logger
      * @param CAS $cas
      * @param Storage $storage
      * @param Client $client
@@ -112,7 +111,7 @@ class CasListener implements ListenerInterface
         $providerKey,
         AuthenticationSuccessHandlerInterface $successHandler,
         AuthenticationFailureHandlerInterface $failureHandler,
-        Logger $logger = null,
+        LoggerInterface $logger = null,
         CAS $cas,
         Storage $storage,
         Client $client,
