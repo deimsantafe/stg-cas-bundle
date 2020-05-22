@@ -1,35 +1,27 @@
 {
-    "name": "stgbundle/cas-bundle",
+    "name": "clzonta/cas-bundle",
     "type": "symfony-bundle",
-    "description": "Bundle de Central Authentication Service",
-    "keywords": ["CAS", "Authentication", "STG"],
-    "homepage": "http://www.santafe.gov.ar",
-
-    "authors": [
-        {
-            "name": "Mozzati, Carlos",
-            "homepage": "http://www.santafe.gov.ar",
-            "email": "cmozzati@santafe.gov.ar" 
-        },
-        {
-            "name": "Zonta, Claudio",
-            "homepage": "http://www.santafe.gov.ar",
-            "email": "czonta@santafe.gov.ar" 
-        }
-        
-    ],
-
+    "description": "Bundle de cas para symfony 4.4",
+    "homepage": "https://github.com/clzonta/cas-bundle",
+    "license": "MIT",
     "require": {
-        "php":                      ">=5.5.9",
-        "symfony/framework-bundle": ">=3.4"
+        "php": "^7.1.3",
+        "jasig/phpcas": "~1.3",
+	    "symfony/security-guard": "~3.4|4.*|~5.0",
+        "symfony/config": "~3.4|4.*|~5.0",
+        "symfony/dependency-injection": "~3.4|4.*|~5.0",
+        "symfony/routing": "~3.4|4.*|~5.0",
+        "symfony/yaml": "~3.4|4.*|~5.0"
     },
-
     "autoload": {
-        "psr-0": {
-            "STG\\DEIM\\Security\\Bundle\\CasBundle": ""
-        }
+        "psr-4": { "AlexandreT\\Bundle\\CasGuardBundle\\": "" }
     },
-
-    "target-dir": "STG/DEIM/Security/Bundle/CasBundle"
-    
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "codeception/aspect-mock": "*",
+        "phpunit/phpunit": "~7.5",
+        "symfony/debug": "~3.4|4.*|~5.0",
+        "symfony/phpunit-bridge": "~3.4|4.*|~5.0"
+    }
 }

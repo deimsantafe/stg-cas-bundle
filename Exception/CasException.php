@@ -1,53 +1,31 @@
 <?php
-namespace STG\DEIM\Security\Bundle\CasBundle\Exception;
+/**
+ * This file is part of the PhpCAS Guard Bundle.
+ *
+ * PHP version 7.1 | 7.2
+ *
+ * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com>
+ *
+ * @category Exception
+ *
+ * @author    Alexandre Tranchant <alexandre.tranchant@gmail.com>
+ * @license   MIT
+ *
+ * @see https://github.com/Alexandre-T/casguard/blob/master/LICENSE
+ */
 
-class CasException extends \RuntimeException
+namespace AlexandreT\Bundle\CasGuardBundle\Exception;
+
+use Symfony\Component\Config\Definition\Exception\Exception;
+
+/**
+ * CasException class.
+ *
+ * @category Exception
+ *
+ * @author  Alexandre Tranchant <alexandre.tranchant@gmail.com>
+ * @license MIT
+ */
+class CasException extends Exception
 {
-    protected $xmlException;
-    protected $xmlDocument;
-
-    function __construct($xmlException = null, \DOMDocument $xmlDocument = null)
-    {
-        $this->xmlException = $xmlException;
-        $this->xmlDocument = $xmlDocument;
-        parent::__construct($this->generateMessage($xmlException, $xmlDocument));
-    }
-
-    private function generateMessage($xmlException, \DOMDocument $xmlDocument)
-    {
-        //Parse the xml in order to show message
-
-        if($xmlDocument) {
-            $errorCode = '';
-            foreach ($xmlDocument->getElementsByTagName('authenticationFailure') as $element) {
-                $errorCode = $element->getAttribute('code');
-            }
-
-            switch ($errorCode) {
-                case 'INVALID_TICKET':
-                    return 'Ticket Inválido';
-                    break;
-            }
-        }
-
-        return 'Error Login';
-    }
-
-    /**
-     * @return null
-     */
-    public function getXmlException()
-    {
-        return $this->xmlException;
-    }
-
-    /**
-     * @param null $xmlException
-     */
-    public function setXmlException($xmlException)
-    {
-        $this->xmlException = $xmlException;
-    }
-
-
 }

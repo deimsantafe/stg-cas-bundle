@@ -1,0 +1,10 @@
+services:
+    phpcasguard.cas_service:
+        class: AlexandreT\Bundle\CasGuardBundle\Service\CasService
+        arguments:
+           - '%cas_config%'
+    phpcasguard.cas_authenticator:
+        class: AlexandreT\Bundle\CasGuardBundle\Security\CasAuthenticator
+        arguments:
+            - '@router'
+            - '@phpcasguard.cas_service'
