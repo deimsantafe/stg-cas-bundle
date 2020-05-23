@@ -1,5 +1,5 @@
 {
-    "name": "stgbundle/cas-bundle",
+    "name": "deimsantafe/stg-cas-bundle",
     "type": "symfony-bundle",
     "description": "Bundle de cas para symfony 4.4",
     "homepage": "https://github.com/deimsantafe/stg-cas-bundle",
