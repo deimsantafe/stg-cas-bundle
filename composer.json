@@ -1,8 +1,8 @@
 {
-    "name": "clzonta/cas-bundle",
+    "name": "deimsantafe/stg-cas-bundle",
     "type": "symfony-bundle",
     "description": "Bundle de cas para symfony 4.4",
-    "homepage": "https://github.com/clzonta/cas-bundle",
+    "homepage": "https://github.com/deimsantafe/stg-cas-bundle",
     "license": "MIT",
     "require": {
         "php": "^7.1.3",
