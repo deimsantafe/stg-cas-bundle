@@ -1,22 +1,8 @@
 <?php
-/**
- * This file is part of the PhpCAS Guard Bundle.
- *
- * PHP version 7.1 | 7.2
- *
- * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com>
- *
- * @category Entity
- *
- * @author    Alexandre Tranchant <alexandre.tranchant@gmail.com>
- * @license   MIT
- *
- * @see https://github.com/Alexandre-T/casguard/blob/master/LICENSE
- */
 
-namespace AlexandreT\Bundle\CasGuardBundle\Security;
+namespace Stg\Bundle\CasGuardBundle\Security;
 
-use AlexandreT\Bundle\CasGuardBundle\Service\CasServiceInterface;
+use Stg\Bundle\CasGuardBundle\Service\CasServiceInterface;
 use phpCAS;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -31,14 +17,6 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Http\Logout\LogoutSuccessHandlerInterface;
 
-/**
- * Cas Authenticator.
- *
- * @category Security
- *
- * @author  Alexandre Tranchant <alexandre.tranchant@gmail.com>
- * @license MIT
- */
 class CasAuthenticator extends AbstractGuardAuthenticator implements LogoutSuccessHandlerInterface
 {
     /**
