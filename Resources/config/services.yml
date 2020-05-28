@@ -3,8 +3,8 @@ services:
         class: Stg\Bundle\CasGuardBundle\Service\CasService
         arguments:
            - '%cas_config%'
+           - "%kernel.logs_dir%/%kernel.environment%.log"
     phpcasguard.cas_authenticator:
         class: Stg\Bundle\CasGuardBundle\Security\CasAuthenticator
         arguments:
-            - '@router'
             - '@phpcasguard.cas_service'
