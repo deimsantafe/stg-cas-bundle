@@ -21,8 +21,7 @@ class CasService
 
     protected function initPhpCas()
     {
-        phpCAS::setDebug($this->logFile);
-        //phpCAS::setVerbose($this->isVerbose());
+        phpCAS::setDebug($this->getDebug());
         phpCAS::setVerbose(false);
         if (!phpCAS::isInitialized()) {
             phpCAS::client(
@@ -95,9 +94,13 @@ class CasService
         return trim($this->getParameter('logout_redirect')) !== '';
     }
 
-    public function isVerbose()
+    public function getDebug()
     {
-        return $this->getParameter('verbose');
+        if ($this->getParameter('debug')) {
+            return $this->logFile;
+        }
+
+        return false;
     }
 
     public function getLogoutRedirect()

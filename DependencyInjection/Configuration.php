@@ -33,10 +33,10 @@ class Configuration implements ConfigurationInterface
                     ->example('/service-auth')
                     ->info('REQUEST_PATH of the CAS server.')
                 ->end()
-                ->booleanNode('verbose')
+                ->booleanNode('debug')
                     ->defaultValue(false)
                     ->example('true')
-                    ->info('If true phpcas trace will be more explicit.')
+                    ->info('If true log in file.')
                 ->end()
                 ->enumNode('version')
                     ->values([
