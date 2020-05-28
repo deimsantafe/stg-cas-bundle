@@ -65,7 +65,7 @@ class CasAuthenticator extends AbstractGuardAuthenticator implements LogoutSucce
 
     public function onLogoutSuccess(Request $request)
     {
-        $this->cas->logout();
+        $this->cas->logout($request);
     }
 
     public function supports(Request $request)

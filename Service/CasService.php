@@ -3,19 +3,23 @@
 namespace Stg\Bundle\CasGuardBundle\Service;
 
 use Stg\Bundle\CasGuardBundle\Exception\CasException;
+use Symfony\Component\Security\Http\HttpUtils;
 use phpCAS;
 
 class CasService
 {
     private $configuration;
     private $logFile;
+    private $httpUtils;
 
     public function __construct(
                         array $configuration,
-                        string $logFile)
+                        string $logFile,
+                        HttpUtils $httpUtils)
     {
         $this->configuration = $configuration;
         $this->logFile = $logFile;
+        $this->httpUtils = $httpUtils;
         $this->initPhpCas();
     }
 
@@ -54,10 +58,10 @@ class CasService
         return null;
     }
 
-    public function logout()
+    public function logout($request)
     {
         if ($this->isRedirectingAfterLogout()) {
-            $uri = $this->getLogoutRedirect();
+            $uri = $this->getLogoutRedirect($request);
             phpCAS::logoutWithRedirectService($uri);
         } else {
             phpCAS::logout();
@@ -103,9 +107,9 @@ class CasService
         return false;
     }
 
-    public function getLogoutRedirect()
+    public function getLogoutRedirect($request)
     {
-        return $this->getParameter('logout_redirect');
+        return $this->httpUtils->generateUri($request, $this->getParameter('logout_redirect'));
     }
 
     public function getLoginFailure()
