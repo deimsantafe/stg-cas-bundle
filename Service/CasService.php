@@ -4,6 +4,10 @@ namespace Stg\Bundle\CasGuardBundle\Service;
 
 use Stg\Bundle\CasGuardBundle\Exception\CasException;
 use Symfony\Component\Security\Http\HttpUtils;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use phpCAS;
 
 class CasService
@@ -66,6 +70,20 @@ class CasService
         } else {
             phpCAS::logout();
         }        
+    }
+
+    public function loginFailure(Request $request, AuthenticationException $exception)
+    {
+        if (trim($this->getParameter('login_failure')) !== '') {
+            $uri = $this->httpUtils->generateUri($request, $this->getParameter('login_failure'));
+            return new RedirectResponse($uri);
+        } 
+        else {
+            $data = array(
+                'message' => strtr($exception->getMessageKey(), $exception->getMessageData()),
+            );   
+            return new JsonResponse($data, 403);
+        }   
     }
 
     public function getHostname()

@@ -11,7 +11,6 @@ use Symfony\Component\Security\Http\Logout\LogoutSuccessHandlerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class CasAuthenticator extends AbstractGuardAuthenticator implements LogoutSuccessHandlerInterface
 {
@@ -44,11 +43,7 @@ class CasAuthenticator extends AbstractGuardAuthenticator implements LogoutSucce
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        $data = array(
-            'message' => strtr($exception->getMessageKey(), $exception->getMessageData()),
-        );
-
-        return new JsonResponse($data, 403);
+        return $this->cas->loginFailure($request, $exception);
     }
 
     public function start(Request $request, AuthenticationException $authException = null)
