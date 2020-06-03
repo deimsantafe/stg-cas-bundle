@@ -1,90 +1,77 @@
-Php CAS Bundle 
+Stg CAS Bundle 
 ==============
 
-PhpCas Bundle provide CAS Authentication using guard for symfony 3.4+ and 4.
+Central Authentication Service para Symfony 3.4 y 4.4 
 
-This bundle **DO NOT** provide a CAS server. By using this bundle, your application will be able to use your Cas Server
-to authenticate your users.  
-[![SymfonyInsight](https://insight.symfony.com/projects/cb0f5515-dc7a-4295-9faa-83e81fc1e23b/mini.svg)](https://insight.symfony.com/projects/cb0f5515-dc7a-4295-9faa-83e81fc1e23b)
-[![Coverage Status](https://coveralls.io/repos/github/Alexandre-T/casguard/badge.svg)](https://coveralls.io/github/Alexandre-T/casguard?branch=master)
-[![Build Status](https://travis-ci.org/Alexandre-T/casguard.svg)](https://travis-ci.org/Alexandre-T/casguard)
-
-Installation
+Instalación
 ============
 
-Step 1: Download the Bundle
----------------------------
+1). Instalación desde packagist.org: https://packagist.org/packages/stgbundle/cas-bundle
 
-Open a command console, enter your project directory and execute the
-following command to download the latest stable version of this bundle:
+composer require stgbundle/cas-bundle
 
-```console
-$ composer require "alexandret/phpcas-guard-bundle" "~1"
-```
-
-This command requires you to have Composer installed globally, as explained
-in the [installation chapter](https://getcomposer.org/doc/00-intro.md)
-of the Composer documentation.
-
-Step 2: Enable the Bundle
--------------------------
-
-Enable the bundle by adding it to the list of registered bundles
-in the `config/bundles.php` file of your project:
+2). Registrar el bundle en el archivo `config/bundles.php`:
 
 ```php
 <?php
 
 return [
     //...
-    AlexandreT\Bundle\CasGuardBundle\CasGuardBundle::class => ['all' => true],
+    Stg\Bundle\CasGuardBundle\CasGuardBundle::class => ['all' => true],
 ];
 ```
 
-Step 3: Enable the Security
-----------------------------
-
-Update your `config\packages\security.yaml` file:
+3). Ajustar la configuración de seguridad (security.yml)
 
 ```yaml
-#http://symfony.com/doc/current/reference/configuration/security.html#full-default-configuration
 security:
     # ...
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\Usuario
+                property: cuil
     firewalls:
-        #Main firewall
-        main:
-            # We use Guard !
+        secure:
+            pattern: ^/secure
+            provider: app_user_provider
             guard:
                 authenticators:
-                    # ADD the cas authenticator declared in this bundle
-                    - phpcasguard.cas_authenticator
-            # The logout path
+                     - phpcasguard.cas_authenticator
             logout:
-                # This route will be never called because of listener. It will catch it and redirect user.                
-                path: /logout
-                # ADD the same cas authenticator declared in this bundle to activate logout function
-                success_handler: phpcasguard.cas_authenticator  
+                path: /secure/logout
+                success_handler: phpcasguard.cas_authenticator
+        main:
+            anonymous: lazy
     # ...
 
 ```
 
-Since Symfony 2.8, Guard is providing a new and excellent way to authenticate. I recommend you to have a look 
-on [this excellent tutorial](https://knpuniversity.com/screencast/symfony-security) to understand guard features.
-This tutorial explains how to generate a standard authentication using **guard** and a **login form**. When you 
-understand it, you only have to disable the call to the login form authenticator implemented in 
-[the chapter 5](https://knpuniversity.com/screencast/symfony-security/login-form-authenticator) and replace it by 
-the `phpcasguard.cas_authenticator` declared inside this bundle. 
+4). Configuración del bundle
 
-Step 4: Configure the Bundle
-----------------------------
-
-Create a `config\packages\cas_guard.yaml` file:
+Crear el archivo `config\packages\cas_guard.yaml`:
 
 ```yaml
 cas_guard:
-    hostname: '%env(CAS_HOSTNAME)%'
-    # ...
+    hostname: dsso.santafe.gob.ar
+    url: /service-auth # opcional
+    port: 443 # opcional
+    logout_redirect: home  # opcional
+    login_failure: failure # opcional - Debe definirse en el área pública
+    debug: true # opcional - Se recomienda false en producción
+    version: "3.0" # opcional
 ```
 
-Have a look on the [complete configuration](./Resources/doc/configuration.md) file to complete and 
-connect it with your CAS server. 
+5). Agregar las rutas vacias
+
+```php
+// src/Controller/DefaultController.php
+
+    /**
+     * @Route("/secure/logout")
+    */
+    public function logout()
+    {
+    }
+```
+
