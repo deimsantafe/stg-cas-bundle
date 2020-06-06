@@ -1,7 +1,7 @@
 Stg CAS Bundle 
 ==============
 
-Central Authentication Service para Symfony 3.4 y 4.4 
+Central Authentication Service para Symfony 4.4 
 
 Instalación
 ============

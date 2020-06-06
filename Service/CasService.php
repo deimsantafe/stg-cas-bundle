@@ -24,7 +24,6 @@ class CasService
         $this->configuration = $configuration;
         $this->logFile = $logFile;
         $this->httpUtils = $httpUtils;
-        //$this->initPhpCas();
     }
 
     protected function initPhpCas()
