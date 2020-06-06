@@ -24,7 +24,7 @@ class CasService
         $this->configuration = $configuration;
         $this->logFile = $logFile;
         $this->httpUtils = $httpUtils;
-        $this->initPhpCas();
+        //$this->initPhpCas();
     }
 
     protected function initPhpCas()
@@ -45,6 +45,7 @@ class CasService
     }
 
     public function Authenticate() {
+        $this->initPhpCas();
         phpCAS::forceAuthentication();
         if (phpCAS::getUser()) {
             return phpCAS::getUser();
@@ -64,6 +65,7 @@ class CasService
 
     public function logout($request)
     {
+        $this->initPhpCas();
         if ($this->isRedirectingAfterLogout()) {
             $uri = $this->getLogoutRedirect($request);
             phpCAS::logoutWithRedirectService($uri);

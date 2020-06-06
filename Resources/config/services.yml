@@ -9,3 +9,4 @@ services:
         class: Stg\Bundle\CasGuardBundle\Security\CasAuthenticator
         arguments:
             - '@phpcasguard.cas_service'
+            - '@security.helper'
