@@ -3,7 +3,8 @@
 namespace Stg\Bundle\CasGuardBundle\Service;
 
 use Stg\Bundle\CasGuardBundle\Exception\CasException;
-use Symfony\Component\Security\Http\HttpUtils;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,16 +15,16 @@ class CasService
 {
     private $configuration;
     private $logFile;
-    private $httpUtils;
+    private $router;
 
     public function __construct(
                         array $configuration,
                         string $logFile,
-                        HttpUtils $httpUtils)
+                        RouterInterface $router)
     {
         $this->configuration = $configuration;
         $this->logFile = $logFile;
-        $this->httpUtils = $httpUtils;
+        $this->router = $router;
     }
 
     protected function initPhpCas()
@@ -66,7 +67,7 @@ class CasService
     {
         $this->initPhpCas();
         if ($this->isRedirectingAfterLogout()) {
-            $uri = $this->getLogoutRedirect($request);
+            $uri = $this->generateUrlAbsolute($request, $this->getParameter('logout_redirect'));
             phpCAS::logoutWithRedirectService($uri);
         } else {
             phpCAS::logout();
@@ -76,7 +77,7 @@ class CasService
     public function loginFailure(Request $request, AuthenticationException $exception)
     {
         if (trim($this->getParameter('login_failure')) !== '') {
-            $uri = $this->httpUtils->generateUri($request, $this->getParameter('login_failure'));
+            $uri = $this->generateUrlAbsolute($request, $this->getParameter('login_failure'))
             return new RedirectResponse($uri);
         } 
         else {
@@ -128,7 +129,7 @@ class CasService
 
     public function getLogoutRedirect($request)
     {
-        return $this->httpUtils->generateUri($request, $this->getParameter('logout_redirect'));
+        return $this->generateUrlAbsolute($request, $this->getParameter('logout_redirect'));
     }
 
     public function getLoginFailure()
@@ -136,6 +137,20 @@ class CasService
         return $this->getParameter('login_failure');
     }
 
+    private function generateUrlAbsolute($request, $route) {
+        if ($host = $request->headers->has('x-forwarded-host')) {
+            $uri = $host . $this->router->generate($route);
+        }
+        else {    
+            $uri = $this->router->generate(
+                $route,
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+        }  
+        return $uri;  
+    }
+    
     private function getParameter($key)
     {
         if (!key_exists($key, $this->configuration)) {
