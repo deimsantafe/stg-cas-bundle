@@ -138,8 +138,9 @@ class CasService
     }
 
     private function generateUrlAbsolute($request, $route) {
+        $scheme = $request->getScheme();
         if ($host = $request->headers->get('x-forwarded-host')) {
-            $uri = $host . $this->router->generate($route);
+            $uri = $scheme . '://' . $host . $this->router->generate($route);
         }
         else {    
             $uri = $this->router->generate(
