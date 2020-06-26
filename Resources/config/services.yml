@@ -4,7 +4,7 @@ services:
         arguments:
            - '%cas_config%'
            - '%kernel.logs_dir%/%kernel.environment%.log'
-           - '@security.http_utils'
+           - '@router'
     phpcasguard.cas_authenticator:
         class: Stg\Bundle\CasGuardBundle\Security\CasAuthenticator
         arguments:
