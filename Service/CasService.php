@@ -77,7 +77,7 @@ class CasService
     public function loginFailure(Request $request, AuthenticationException $exception)
     {
         if (trim($this->getParameter('login_failure')) !== '') {
-            $uri = $this->generateUrlAbsolute($request, $this->getParameter('login_failure'))
+            $uri = $this->generateUrlAbsolute($request, $this->getParameter('login_failure'));
             return new RedirectResponse($uri);
         } 
         else {
