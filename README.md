@@ -8,7 +8,7 @@ Instalación
 
 1). Instalación desde packagist.org: https://packagist.org/packages/stgbundle/cas-bundle
 
-composer require stgbundle/cas-bundle
+composer require stgbundle/cas-bundle:~5.0
 
 2). Registrar el bundle en el archivo `config/bundles.php`:
 
@@ -74,4 +74,11 @@ cas_guard:
     {
     }
 ```
+
+6.) Uso con Ajax
+
+El bundle detecta cuando la llamada es ajax y en caso de necesitar autorización no lo
+redirige a la pantalla del sso, sino que devuelve el código http 401 (Unauthorized).
+Queda en el cliente de detectar esta respuesta y redirigir la llamada.
+
 
