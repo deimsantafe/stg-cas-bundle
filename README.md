@@ -8,7 +8,7 @@ Instalación
 
 1). Instalación desde packagist.org: https://packagist.org/packages/stgbundle/cas-bundle
 
-composer require stgbundle/cas-bundle:~5.0
+composer require stgbundle/cas-bundle
 
 2). Registrar el bundle en el archivo `config/bundles.php`:
 
