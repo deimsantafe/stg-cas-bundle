@@ -1,6 +1,6 @@
 <?php
 
-namespace Stg\Bundle\CasGuardBundle\Exception;
+namespace Stg\Bundle\CasBundle\Exception;
 
 use Symfony\Component\Config\Definition\Exception\Exception;
 

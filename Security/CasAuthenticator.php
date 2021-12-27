@@ -1,20 +1,22 @@
 <?php
 
-namespace Stg\Bundle\CasGuardBundle\Security;
+namespace Stg\Bundle\CasBundle\Security;
 
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Stg\Bundle\CasGuardBundle\Service\CasService;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
-use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Http\Logout\LogoutSuccessHandlerInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Stg\Bundle\CasBundle\Service\CasService;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
-class CasAuthenticator extends AbstractGuardAuthenticator implements LogoutSuccessHandlerInterface
+class CasAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     private $cas;
     private $security;
@@ -25,7 +27,7 @@ class CasAuthenticator extends AbstractGuardAuthenticator implements LogoutSucce
         $this->security = $security;
     }
 
-    public function supports(Request $request)
+    public function supports(Request $request): ?bool
     {
         if ($this->security->getUser()) {
             return false;
@@ -34,31 +36,31 @@ class CasAuthenticator extends AbstractGuardAuthenticator implements LogoutSucce
         return true;
     }
 
-    public function getCredentials(Request $request)
+    public function start(Request $request, AuthenticationException $authException = null): RedirectResponse
     {
+        // Si el llamado es ajax devuelve un 401
         if($request->isXmlHttpRequest()) {
             throw new AuthenticationException('Unauthorized', 401);
         }
-        
-        return $this->cas->Authenticate();
+
+        //The URL have to be completed by the current request uri,
+        // because Cas Server need to know where redirect user after authentication.
+        return new RedirectResponse($this->cas->getUri() . $request->getUri());
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    public function authenticate(Request $request): Passport
     {
-        return $userProvider->loadUserByUsername($credentials);
+        $user = $this->cas->Authenticate();
+        return new SelfValidatingPassport(new UserBadge($user));
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
-    {
-        return true;
-    }
-
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $token->setAttributes($this->cas->getAttributes());
+        return null;
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         if($request->isXmlHttpRequest()) {
             $data = array(
@@ -69,22 +71,4 @@ class CasAuthenticator extends AbstractGuardAuthenticator implements LogoutSucce
         
         return $this->cas->loginFailure($request, $exception);
     }
-
-    public function start(Request $request, AuthenticationException $authException = null)
-    {
-        //The URL have to be completed by the current request uri,
-        // because Cas Server need to know where redirect user after authentication.
-        return new RedirectResponse($this->cas->getUri() . $request->getUri());
-    }
-
-    public function supportsRememberMe()
-    {
-        return false;
-    }
-
-    public function onLogoutSuccess(Request $request)
-    {
-        $this->cas->logout($request);
-    }
-
 }

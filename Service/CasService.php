@@ -1,8 +1,9 @@
 <?php
 
-namespace Stg\Bundle\CasGuardBundle\Service;
+namespace Stg\Bundle\CasBundle\Service;
 
-use Stg\Bundle\CasGuardBundle\Exception\CasException;
+use Psr\Log\LoggerInterface;
+use Stg\Bundle\CasBundle\Exception\CasException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -14,22 +15,22 @@ use phpCAS;
 class CasService
 {
     private $configuration;
-    private $logFile;
+    private $logger;
     private $router;
 
     public function __construct(
                         array $configuration,
-                        string $logFile,
+                        LoggerInterface $logger,
                         RouterInterface $router)
     {
         $this->configuration = $configuration;
-        $this->logFile = $logFile;
+        $this->logger = $logger;
         $this->router = $router;
     }
 
     protected function initPhpCas()
     {
-        phpCAS::setDebug($this->getDebug());
+        phpCAS::setLogger($this->getDebug());
         phpCAS::setVerbose(false);
         if (!phpCAS::isInitialized()) {
             phpCAS::client(
@@ -118,13 +119,13 @@ class CasService
         return trim($this->getParameter('logout_redirect')) !== '';
     }
 
-    public function getDebug()
+    public function getDebug(): ?LoggerInterface
     {
         if ($this->getParameter('debug')) {
-            return $this->logFile;
+            return $this->logger;
         }
 
-        return false;
+        return null;
     }
 
     public function getLogoutRedirect($request)

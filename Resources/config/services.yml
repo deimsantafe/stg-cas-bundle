@@ -1,12 +1,17 @@
 services:
-    phpcasguard.cas_service:
-        class: Stg\Bundle\CasGuardBundle\Service\CasService
+    stg.cas_service:
+        class: Stg\Bundle\CasBundle\Service\CasService
         arguments:
            - '%cas_config%'
-           - '%kernel.logs_dir%/%kernel.environment%.log'
+           - '@logger'
            - '@router'
-    phpcasguard.cas_authenticator:
-        class: Stg\Bundle\CasGuardBundle\Security\CasAuthenticator
+    stg.cas_authenticator:
+        class: Stg\Bundle\CasBundle\Security\CasAuthenticator
         arguments:
-            - '@phpcasguard.cas_service'
+            - '@stg.cas_service'
             - '@security.helper'
+    stg.cas_logout:
+        class: Stg\Bundle\CasBundle\Security\EventListener\SessionLogoutListener
+        arguments:
+            - '@stg.cas_service'
+
