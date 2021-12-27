@@ -14,4 +14,6 @@ services:
         class: Stg\Bundle\CasBundle\Security\EventListener\SessionLogoutListener
         arguments:
             - '@stg.cas_service'
+        tags:
+            - { name: kernel.event_subscriber }            
 

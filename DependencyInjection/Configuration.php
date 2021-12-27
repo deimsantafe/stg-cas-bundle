@@ -11,7 +11,7 @@ class Configuration implements ConfigurationInterface
     const CAS_VERSION_2_0 = '2.0';
     const CAS_VERSION_1_0 = '1.0';
 
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('cas');
         $rootNode = $treeBuilder->getRootNode();
