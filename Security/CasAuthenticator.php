@@ -32,15 +32,19 @@ class CasAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         if ($this->security->getUser()) {
             return false;
         }
-        
+
+        if($request->isXmlHttpRequest()) {
+            throw new AuthenticationException('Unauthorized', 401);  
+        } 
+                  
         return true;
     }
 
-    public function start(Request $request, AuthenticationException $authException = null): RedirectResponse
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
         // Si el llamado es ajax devuelve un 401
         if($request->isXmlHttpRequest()) {
-            throw new AuthenticationException('Unauthorized', 401);
+            return new JsonResponse($authException->getMessage(), $authException->getCode());
         }
 
         //The URL have to be completed by the current request uri,
