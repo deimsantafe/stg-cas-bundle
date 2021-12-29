@@ -77,16 +77,16 @@ class CasService
 
     public function loginFailure(Request $request, AuthenticationException $exception)
     {
-        if (trim($this->getParameter('login_failure')) !== '') {
+        $this->initPhpCas();
+
+        if ($this->isRedirectingAfterFailure()) {
             $uri = $this->generateUrlAbsolute($request, $this->getParameter('login_failure'));
-            return new RedirectResponse($uri);
+            phpCAS::logoutWithRedirectService($uri);
         } 
         else {
-            $data = array(
-                'message' => strtr($exception->getMessageKey(), $exception->getMessageData()),
-            );   
-            return new JsonResponse($data, 403);
-        }   
+            phpCAS::log($exception->getMessage());
+            phpCAS::logout();
+        }  
     }
 
     public function getHostname()
@@ -117,6 +117,11 @@ class CasService
     public function isRedirectingAfterLogout()
     {
         return trim($this->getParameter('logout_redirect')) !== '';
+    }
+
+    public function isRedirectingAfterFailure()
+    {
+        return trim($this->getParameter('login_failure')) !== '';
     }
 
     public function getDebug(): ?LoggerInterface
