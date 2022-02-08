@@ -1,27 +1,25 @@
 {
     "name": "stgbundle/cas-bundle",
     "type": "symfony-bundle",
-    "description": "Bundle de cas para symfony 4.4",
+    "description": "Bundle de cas para symfony 5.4",
     "homepage": "https://github.com/deimsantafe/stg-cas-bundle",
     "license": "MIT",
     "require": {
-        "php": "^7.1.3",
-        "jasig/phpcas": "~1.3",
-	    "symfony/security-guard": "~3.4|4.*|~5.0",
-        "symfony/config": "~3.4|4.*|~5.0",
-        "symfony/dependency-injection": "~3.4|4.*|~5.0",
-        "symfony/routing": "~3.4|4.*|~5.0",
-        "symfony/yaml": "~3.4|4.*|~5.0"
+        "php": ">=7.2.5",
+        "jasig/phpcas": "~1.4",
+	    "symfony/security-bundle": "~5.4",
+        "symfony/dependency-injection": "~5.4",
+        "symfony/routing": "~5.4"
     },
     "autoload": {
-        "psr-4": { "Stg\\Bundle\\CasGuardBundle\\": "" }
+        "psr-4": { "Stg\\Bundle\\CasBundle\\": "" }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
         "codeception/aspect-mock": "*",
         "phpunit/phpunit": "~7.5",
-        "symfony/debug": "~3.4|4.*|~5.0",
-        "symfony/phpunit-bridge": "~3.4|4.*|~5.0"
+        "symfony/debug": "~5.4",
+        "symfony/phpunit-bridge": "~5.4"
     }
 }

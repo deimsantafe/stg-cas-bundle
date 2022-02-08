@@ -1,7 +1,7 @@
 Stg CAS Bundle 
 ==============
 
-Central Authentication Service para Symfony 4.4 
+Central Authentication Service para Symfony 5.4 
 
 Instalación
 ============
@@ -17,7 +17,7 @@ composer require stgbundle/cas-bundle
 
 return [
     //...
-    Stg\Bundle\CasGuardBundle\CasGuardBundle::class => ['all' => true],
+    Stg\Bundle\CasBundle\CasBundle::class => ['all' => true],
 ];
 ```
 
@@ -35,12 +35,10 @@ security:
         secure:
             pattern: ^/secure
             provider: app_user_provider
-            guard:
-                authenticators:
-                     - phpcasguard.cas_authenticator
+            custom_authenticators:
+                - stg.cas_authenticator
             logout:
                 path: /secure/logout
-                success_handler: phpcasguard.cas_authenticator
         main:
             anonymous: lazy
     # ...
@@ -49,10 +47,10 @@ security:
 
 4). Configuración del bundle
 
-Crear el archivo `config\packages\cas_guard.yaml`:
+Crear el archivo `config\packages\cas.yaml`:
 
 ```yaml
-cas_guard:
+cas:
     hostname: dsso.santafe.gob.ar
     url: /service-auth # opcional
     port: 443 # opcional

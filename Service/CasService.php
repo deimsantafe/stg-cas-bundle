@@ -1,35 +1,34 @@
 <?php
 
-namespace Stg\Bundle\CasGuardBundle\Service;
+namespace Stg\Bundle\CasBundle\Service;
 
-use Stg\Bundle\CasGuardBundle\Exception\CasException;
+use Psr\Log\LoggerInterface;
+use Stg\Bundle\CasBundle\Exception\CasException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use phpCAS;
 
 class CasService
 {
     private $configuration;
-    private $logFile;
+    private $logger;
     private $router;
 
     public function __construct(
                         array $configuration,
-                        string $logFile,
+                        LoggerInterface $logger,
                         RouterInterface $router)
     {
         $this->configuration = $configuration;
-        $this->logFile = $logFile;
+        $this->logger = $logger;
         $this->router = $router;
     }
 
     protected function initPhpCas()
     {
-        phpCAS::setDebug($this->getDebug());
+        phpCAS::setLogger($this->getDebug());
         phpCAS::setVerbose(false);
         if (!phpCAS::isInitialized()) {
             phpCAS::client(
@@ -76,16 +75,16 @@ class CasService
 
     public function loginFailure(Request $request, AuthenticationException $exception)
     {
-        if (trim($this->getParameter('login_failure')) !== '') {
+        $this->initPhpCas();
+
+        if ($this->isRedirectingAfterFailure()) {
             $uri = $this->generateUrlAbsolute($request, $this->getParameter('login_failure'));
-            return new RedirectResponse($uri);
+            phpCAS::logoutWithRedirectService($uri);
         } 
         else {
-            $data = array(
-                'message' => strtr($exception->getMessageKey(), $exception->getMessageData()),
-            );   
-            return new JsonResponse($data, 403);
-        }   
+            phpCAS::log($exception->getMessage());
+            phpCAS::logout();
+        }  
     }
 
     public function getHostname()
@@ -118,13 +117,18 @@ class CasService
         return trim($this->getParameter('logout_redirect')) !== '';
     }
 
-    public function getDebug()
+    public function isRedirectingAfterFailure()
+    {
+        return trim($this->getParameter('login_failure')) !== '';
+    }
+
+    public function getDebug(): ?LoggerInterface
     {
         if ($this->getParameter('debug')) {
-            return $this->logFile;
+            return $this->logger;
         }
 
-        return false;
+        return null;
     }
 
     public function getLogoutRedirect($request)

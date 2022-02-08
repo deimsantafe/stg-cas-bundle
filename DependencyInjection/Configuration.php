@@ -1,10 +1,9 @@
 <?php
 
-namespace Stg\Bundle\CasGuardBundle\DependencyInjection;
+namespace Stg\Bundle\CasBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Symfony\Component\HttpKernel\Kernel;
 
 class Configuration implements ConfigurationInterface
 {
@@ -12,9 +11,9 @@ class Configuration implements ConfigurationInterface
     const CAS_VERSION_2_0 = '2.0';
     const CAS_VERSION_1_0 = '1.0';
 
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('cas_guard');
+        $treeBuilder = new TreeBuilder('cas');
         $rootNode = $treeBuilder->getRootNode();
         $rootNode
             ->children()
