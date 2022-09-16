@@ -47,7 +47,7 @@ class CasService
         $this->initPhpCas();
         phpCAS::forceAuthentication();
         if (phpCAS::getUser()) {
-            return phpCAS::getUser();
+            return $this->getUser();
         }
 
         return null;
@@ -78,7 +78,7 @@ class CasService
         $this->initPhpCas();
 
         if ($this->isRedirectingAfterFailure()) {
-            $uri = $this->generateUrlAbsolute($request, $this->getParameter('login_failure'));
+            $uri = $this->generateUrlAbsolute($request, $this->getParameter('login_failure'), ['user' => $this->getUser()]);
             phpCAS::logoutWithRedirectService($uri);
         } 
         else {
@@ -131,25 +131,20 @@ class CasService
         return null;
     }
 
-    public function getLogoutRedirect($request)
-    {
-        return $this->generateUrlAbsolute($request, $this->getParameter('logout_redirect'));
-    }
-
     public function getLoginFailure()
     {
         return $this->getParameter('login_failure');
     }
 
-    private function generateUrlAbsolute($request, $route) {
+    private function generateUrlAbsolute($request, $route, $params = []) {
         $scheme = $request->getScheme();
         if ($host = $request->headers->get('x-forwarded-host')) {
-            $uri = $scheme . '://' . $host . $this->router->generate($route);
+            $uri = $scheme . '://' . $host . $this->router->generate($route, $params);
         }
         else {    
             $uri = $this->router->generate(
                 $route,
-                [],
+                $params,
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
         }  
@@ -163,5 +158,11 @@ class CasService
         }
 
         return $this->configuration[$key];
+    }
+
+    private function getUser() {
+        $attributes = $this->getAttributes();
+        $userAtribute = $this->getParameter('user');
+        return $userAtribute === 'uid' ? $attributes['uid'] : $attributes['cuil'];
     }
 }
