@@ -63,7 +63,24 @@ cas:
     }
 ```
 
-5). Uso con Ajax
+5). Login failure
+
+En caso de no existir el usuario en la base de datos de la aplicación, el bundle redirije la petición a la ruta definida en la
+configuración del bundle y le envía como parámetro el cuil o uid ingresado, según corresponda
+
+```php
+    /**
+    * @Route("/failure", name="failure")
+    */    
+    public function failure(Request $request): Response
+    {
+        return new Response(
+            'Error al autenticar - Usuario: ' . $request->get('user')
+        );
+    }
+```    
+
+6). Uso con Ajax
 
 El bundle detecta cuando la llamada es ajax y en caso de necesitar autorización no lo
 redirige a la pantalla del sso, sino que devuelve el código http 401 (Unauthorized).
