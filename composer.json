@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": ">=7.2.5",
-        "jasig/phpcas": "~1.4",
+        "jasig/phpcas": "1.5.0",
 	    "symfony/security-bundle": "~5.4",
         "symfony/dependency-injection": "~5.4",
         "symfony/routing": "~5.4"
