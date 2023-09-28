@@ -35,7 +35,8 @@ class CasService
                 $this->getVersion(),
                 $this->getHostname(),
                 $this->getPort(),
-                $this->getUrl()
+                $this->getUrl(),
+                $this->getServiceBaseUrl()
             );
         }
 
@@ -110,6 +111,11 @@ class CasService
     public function getVersion()
     {
         return $this->getParameter('version');
+    }
+
+    public function getServiceBaseUrl()
+    {
+        return $this->getParameter('service_base_url');
     }
 
     public function isRedirectingAfterLogout()
