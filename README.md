@@ -1,7 +1,7 @@
 Stg CAS Bundle 
 ==============
 
-Central Authentication Service para Symfony 5.4 
+Central Authentication Service para Symfony 6.4 
 
 Instalación
 ============
@@ -43,6 +43,7 @@ cas:
     hostname: dsso.santafe.gob.ar
     url: /service-auth # opcional
     port: 443 # opcional
+    service_base_url: http://localhost:80  # Url base del sistema que utiliza el bundle
     user: cuil # Si se quiere acceder por cuil sino uid. Por defecto se utiliza cuil
     logout_redirect: home  # opcional
     login_failure: failure # opcional - Debe definirse en el área pública
