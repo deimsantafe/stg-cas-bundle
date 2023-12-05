@@ -1,7 +1,7 @@
 Stg CAS Bundle 
 ==============
 
-Central Authentication Service para Symfony 6.3 
+Central Authentication Service para Symfony 6.4 
 
 Instalación
 ============
