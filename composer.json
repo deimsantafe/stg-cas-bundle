@@ -1,14 +1,14 @@
 {
     "name": "stgbundle/cas-bundle",
     "type": "symfony-bundle",
-    "description": "Bundle de cas para symfony 6.*",
+    "description": "Bundle de cas para symfony 7.4",
     "homepage": "https://github.com/deimsantafe/stg-cas-bundle",
     "license": "MIT",
     "require": {
-        "php": ">=8.1",
-	    "symfony/security-bundle": "6.4.*",
-        "symfony/dependency-injection": "6.4.*",
-        "symfony/routing": "6.4.*",
+        "php": ">=8.2",
+	    "symfony/security-bundle": "7.4.*",
+        "symfony/dependency-injection": "7.4.*",
+        "symfony/routing": "7.4.*",
         "apereo/phpcas": "^1.6"
     },
     "autoload": {
