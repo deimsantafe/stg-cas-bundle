@@ -1,78 +1,133 @@
 <?php
 
-namespace Stg\Bundle\CasBundle\Security;
+namespace STG\DEIM\Security\Bundle\CasBundle\Security;
 
-use Stg\Bundle\CasBundle\Service\CasService;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Psr\Log\LoggerInterface;
+use STG\DEIM\Security\Bundle\CasBundle\Exception\CasException;
+use STG\DEIM\Security\Bundle\CasBundle\Lib\CAS;
+use STG\DEIM\Security\Bundle\CasBundle\Lib\Client;
+use STG\DEIM\Security\Bundle\CasBundle\Lib\Storage;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\InteractiveAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Symfony\Component\Security\Http\HttpUtils;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
-class CasAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
+class CasAuthenticator extends AbstractAuthenticator implements
+    InteractiveAuthenticatorInterface,
+    AuthenticationEntryPointInterface
 {
-    private $cas;
-    private $security;
+    use TargetPathTrait;
 
-    public function __construct(CasService $cas, Security $security)
+    public function __construct(
+        private readonly CAS $cas,
+        private readonly Client $client,
+        private readonly Storage $storage,
+        private readonly UserProviderInterface $userProvider,
+        private readonly string $checkPath,
+        private readonly string $failurePath,
+        private readonly HttpUtils $httpUtils,
+        private readonly ?LoggerInterface $logger = null,
+    ) {}
+
+    /**
+     * Punto de entrada: redirige al login de CAS cuando el usuario no está autenticado.
+     */
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
-        $this->cas = $cas;
-        $this->security = $security;
+        $serviceUrl = $this->httpUtils->generateUri($request, $this->checkPath);
+        $this->logger?->info('CAS: redirigiendo a login, service=' . $serviceUrl);
+
+        return new RedirectResponse($this->cas->getLoginUrl($serviceUrl));
     }
 
+    /**
+     * Activa el autenticador sólo en la ruta de check con ticket presente.
+     */
     public function supports(Request $request): ?bool
     {
-        if ($this->security->getUser()) {
-            return false;
-        }
-
-        if($request->isXmlHttpRequest()) {
-            throw new AuthenticationException('Unauthorized', 401);  
-        } 
-                  
-        return true;
+        return $this->httpUtils->checkRequestPath($request, $this->checkPath)
+            && $request->query->has('ticket');
     }
 
-    public function start(Request $request, AuthenticationException $authException = null): Response
-    {
-        // Si el llamado es ajax devuelve un 401
-        if($request->isXmlHttpRequest()) {
-            return new JsonResponse($authException->getMessage(), $authException->getCode());
-        }
-
-        //The URL have to be completed by the current request uri,
-        // because Cas Server need to know where redirect user after authentication.
-        return new RedirectResponse($this->cas->getUri() . $request->getUri());
-    }
-
+    /**
+     * Valida el ticket contra el servidor CAS y retorna el Passport.
+     */
     public function authenticate(Request $request): Passport
     {
-        $user = $this->cas->Authenticate();
-        return new SelfValidatingPassport(new UserBadge($user));
+        $serviceUrl = $this->httpUtils->generateUri($request, $this->checkPath);
+        $ticket = $request->query->getString('ticket');
+
+        try {
+            if ($this->cas->isProxy()) {
+                $callbackUrl = $serviceUrl . '?callbackProxy=true';
+                $result = $this->client->validateServiceTicket($serviceUrl, $ticket, $callbackUrl);
+            } else {
+                $result = $this->client->validateServiceTicket($serviceUrl, $ticket);
+            }
+        } catch (CasException $e) {
+            $this->logger?->error('CAS: validación de ticket fallida — ' . $e->getMessage());
+            throw new AuthenticationException($e->getMessage(), 0, $e);
+        }
+
+        $username = $result['user'];
+        $pgtiou   = $result['pgtiou'] ?? null;
+
+        $this->logger?->info(sprintf('CAS: ticket válido para "%s"', $username));
+
+        return new SelfValidatingPassport(
+            new UserBadge($username, function (string $identifier) use ($pgtiou): object {
+                $user = $this->userProvider->loadUserByIdentifier($identifier);
+
+                if ($this->cas->isProxy() && $pgtiou !== null) {
+                    // El PGT queda almacenado en Storage; se puede recuperar
+                    // mediante $storage->getPgt($pgtiou) cuando se necesite.
+                    $this->logger?->info('CAS proxy: PGT recibido para ' . $identifier);
+                }
+
+                return $user;
+            })
+        );
     }
 
+    /**
+     * Tras autenticación exitosa, redirige a la URL original o a /home.
+     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        $token->setAttributes($this->cas->getAttributes());
-        return null;
+        $this->logger?->info(sprintf('CAS: autenticación exitosa para "%s"', $token->getUserIdentifier()));
+
+        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+            $this->removeTargetPath($request->getSession(), $firewallName);
+            return new RedirectResponse($targetPath);
+        }
+
+        return new RedirectResponse('/home');
     }
 
+    /**
+     * Tras fallo de autenticación, redirige al logout de CAS apuntando a la ruta de error.
+     */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        if($request->isXmlHttpRequest()) {
-            $data = array(
-                'message' => strtr($exception->getMessageKey(), $exception->getMessageData()),
-            );   
-            return new JsonResponse($data, $exception->getCode());
-        }
-        
-        return $this->cas->loginFailure($request, $exception);
+        $this->logger?->warning('CAS: fallo de autenticación — ' . $exception->getMessage());
+
+        $failureUrl = $this->httpUtils->generateUri($request, $this->failurePath);
+
+        return new RedirectResponse($this->cas->getLogoutUrl($failureUrl));
+    }
+
+    public function isInteractive(): bool
+    {
+        return true;
     }
 }
