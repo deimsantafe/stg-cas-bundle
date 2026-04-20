@@ -1,19 +1,35 @@
 {
     "name": "stgbundle/cas-bundle",
     "type": "symfony-bundle",
-    "description": "Bundle de cas para symfony 6.*",
+    "description": "Bundle de CAS para Symfony 7.4+",
+    "version": "5.0.0",
+    "keywords": ["CAS", "Authentication", "STG", "Symfony"],
     "homepage": "https://github.com/deimsantafe/stg-cas-bundle",
     "license": "MIT",
+
+    "authors": [
+        {
+            "name": "Mozzati, Carlos",
+            "email": "cmozzati@santafe.gov.ar"
+        },
+        {
+            "name": "Zonta, Claudio",
+            "email": "czonta@santafe.gov.ar"
+        }
+    ],
+
     "require": {
-        "php": ">=8.1",
-	    "symfony/security-bundle": "6.4.*",
-        "symfony/dependency-injection": "6.4.*",
-        "symfony/routing": "6.4.*",
-        "apereo/phpcas": "^1.6"
+        "php": ">=8.2",
+        "symfony/framework-bundle": "^7.4",
+        "symfony/security-bundle": "^7.4"
     },
+
     "autoload": {
-        "psr-4": { "Stg\\Bundle\\CasBundle\\": "" }
+        "psr-4": {
+            "STG\\DEIM\\Security\\Bundle\\CasBundle\\": "STG/DEIM/Security/Bundle/CasBundle/"
+        }
     },
+
     "minimum-stability": "dev",
     "prefer-stable": true
 }
