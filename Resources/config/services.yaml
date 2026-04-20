@@ -1,0 +1,64 @@
+parameters:
+    auth_cas_service.class:        STG\DEIM\Security\Bundle\CasBundle\Lib\CAS
+    auth_cas_client.class:         STG\DEIM\Security\Bundle\CasBundle\Lib\Client
+    auth_cas_storage.class:        STG\DEIM\Security\Bundle\CasBundle\Lib\Storage
+    auth_cas_storage.filename:     /tmp/casTickets.json
+    auth_cas_authenticator.class:  STG\DEIM\Security\Bundle\CasBundle\Security\CasAuthenticator
+    auth_cas_logout_listener.class: STG\DEIM\Security\Bundle\CasBundle\EventListener\CasLogoutListener
+    auth_cas_proxy_controller.class: STG\DEIM\Security\Bundle\CasBundle\Controller\CasProxyCallbackController
+
+services:
+
+    # Construye las URLs del servidor CAS
+    cas.service:
+        class: '%auth_cas_service.class%'
+        arguments:
+            - '%stg_cas.url%'
+            - '%stg_cas.server%'
+            - '%stg_cas.cert%'
+            - '%stg_cas.username_attribute%'
+            - '%stg_cas.proxy%'
+
+    # Valida tickets contra el servidor CAS vía CURL
+    cas.client:
+        class: '%auth_cas_client.class%'
+        arguments:
+            - '@cas.service'
+
+    # Almacenamiento de PGT (sólo en modo proxy)
+    cas.storage:
+        class: '%auth_cas_storage.class%'
+        arguments:
+            - '%auth_cas_storage.filename%'
+
+    # Plantilla abstracta del autenticador.
+    # CasFactory genera una instancia concreta por firewall reemplazando
+    # los argumentos 3 (userProvider), 4 (checkPath) y 5 (failurePath).
+    cas.authenticator:
+        class: '%auth_cas_authenticator.class%'
+        abstract: true
+        arguments:
+            - '@cas.service'
+            - '@cas.client'
+            - '@cas.storage'
+            - ~              # 3: userProvider — reemplazado por CasFactory por firewall
+            - ~              # 4: checkPath   — reemplazado por CasFactory por firewall
+            - ~              # 5: failurePath — reemplazado por CasFactory por firewall
+            - '@security.http_utils'
+            - '@?logger'     # opcional: null si no hay logger disponible
+
+    # Intercepta LogoutEvent y redirige al logout de CAS para cerrar la sesión SSO
+    cas.logout_listener:
+        class: '%auth_cas_logout_listener.class%'
+        arguments:
+            - '@cas.service'
+            - '@security.http_utils'
+        tags:
+            - { name: kernel.event_listener, event: 'Symfony\Component\Security\Http\Event\LogoutEvent', method: onLogout }
+
+    # Controlador back-channel PGT (sólo necesario con proxy: true)
+    cas.proxy_callback_controller:
+        class: '%auth_cas_proxy_controller.class%'
+        public: true
+        arguments:
+            - '@cas.storage'
