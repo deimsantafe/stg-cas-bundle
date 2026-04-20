@@ -1,37 +1,69 @@
 Stg CAS Bundle 
 ==============
 
-Central Authentication Service para Symfony 6.4 
+Bundle de autenticación CAS (Central Authentication Service) para **Symfony 7.4** y **PHP 8.2+**.
+
+---
+
+## Requisitos
+
+| Componente | Versión mínima |
+|---|---|
+| PHP | 8.2 |
+| Symfony | 7.4 |
+| symfony/security-bundle | 7.4 |
+
+---
 
 Instalación
 ============
 
 1). Instalación desde packagist.org: https://packagist.org/packages/stgbundle/cas-bundle
 
-composer require stgbundle/cas-bundle
+composer require stgbundle/cas-bundle:^5.0
 
-2). Ajustar la configuración de seguridad (security.yml)
+Nota: Debe tener instalado previamente el SecurityBundle:
+composer require symfony/security-bundle
+
+En el `config/bundles.php`, el `SecurityBundle` se deb cargar **antes** que `CasBundle`:
+
+```php
+return [
+    Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
+    Symfony\Bundle\SecurityBundle\SecurityBundle::class   => ['all' => true],
+    STG\DEIM\Security\Bundle\CasBundle\CasBundle::class  => ['all' => true],
+    // ... otros bundles
+];
+
+2). Ajustar la configuración de seguridad  — `config/packages/security.yaml`
 
 ```yaml
 security:
-    # ...
     providers:
-        app_user_provider:
-            entity:
-                class: App\Entity\Usuario
-                property: cuil
-    firewalls:
-        secure:
-            pattern: ^/secure
-            provider: app_user_provider
-            custom_authenticators:
-                - stg.cas_authenticator
-            logout:
-                path: /secure/logout
-        main:
-            anonymous: lazy
-    # ...
+        cas_users:
+            id: App\Security\CasUserProvider
 
+    firewalls:
+        dev:
+            pattern: ^/(_profiler|_wdt|assets|build|cas/proxy-callback)/
+            security: false
+
+        main:
+            # lazy: false es obligatorio con CAS: el entry point debe dispararse
+            # para requests anónimas sin esperar credenciales del usuario.
+            lazy: false
+            provider: cas_users
+            cas:
+                check_path: /cas/check      # Ruta donde CAS redirige con el ticket
+                failure_path: /failure      # Ruta de error en caso de fallo
+            entry_point: cas.authenticator.main
+            logout:
+                path: /secure/logout        # Ruta de logout de la aplicación
+
+    access_control:
+        - { path: ^/cas/check, roles: PUBLIC_ACCESS }
+        - { path: ^/failure,   roles: PUBLIC_ACCESS }
+        - { path: ^/,          roles: ROLE_USER }
 ```
 
 3). Configuración del bundle
@@ -40,52 +72,31 @@ Crear el archivo `config\packages\cas.yaml`:
 
 ```yaml
 cas:
-    hostname: dsso.santafe.gob.ar
-    url: /service-auth # opcional
-    port: 443 # opcional
-    service_base_url: http://localhost:80  # Url base del sistema que utiliza el bundle
-    user: cuil # Si se quiere acceder por cuil sino uid. Por defecto se utiliza cuil
-    logout_redirect: home  # opcional
-    login_failure: failure # opcional - Debe definirse en el área pública
-    debug: true # opcional - Se recomienda false en producción
-    version: "3.0" # opcional
+    url:                https://sso.ejemplo.gob.ar/service-auth  # URL del servidor CAS
+    cert:               false               # Ruta al certificado CA, o false para deshabilitar verificación SSL
+    username_attribute: user                # Atributo del XML de CAS que contiene el username
+    proxy:              false               # true sólo si se usa modo proxy CAS
+    # server:           https://...        # Opcional: URL interna del servidor (si difiere de url)
+    # callback:         false              # URL del proxy callback (modo proxy)
 ```
 
-4). Agregar las rutas vacias
+
+4). La aplicación necesita al menos estas tres rutas:
 
 ```php
 // src/Controller/DefaultController.php
+use Symfony\Component\Routing\Attribute\Route;
 
-    /**
-     * @Route("/secure/logout")
-    */
-    public function logout()
-    {
-    }
-```
+#[Route('/cas/check', name: 'cas_check')]
+public function casCheck(): Response { ... }  // El bundle intercepta esta ruta
 
-5). Login failure
+#[Route('/secure/logout', name: 'logout')]
+public function logout(): void {}             // Symfony maneja el logout
 
-En caso de no existir el usuario en la base de datos de la aplicación, el bundle redirije la petición a la ruta definida en la
-configuración del bundle y le envía como parámetro el cuil o uid ingresado, según corresponda
+#[Route('/failure', name: 'failure')]         // Ruta de error en caso de fallo 
+public function failure(Request $request): Response { ... }
 
-```php
-    /**
-    * @Route("/failure", name="failure")
-    */    
-    public function failure(Request $request): Response
-    {
-        return new Response(
-            'Error al autenticar - Usuario: ' . $request->get('user')
-        );
-    }
-```    
 
-6). Uso con Ajax
-
-El bundle detecta cuando la llamada es ajax y en caso de necesitar autorización no lo
-redirige a la pantalla del sso, sino que devuelve el código http 401 (Unauthorized).
-Queda en el cliente detectar esta respuesta y redirigir la llamada.
-
+5). 
 
 
