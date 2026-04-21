@@ -34,7 +34,7 @@ return [
     STG\DEIM\Security\Bundle\CasBundle\CasBundle::class  => ['all' => true],
     // ... otros bundles
 ];
-
+```
 
 
 2). Ajustar la configuración de seguridad  — `config/packages/security.yaml`
@@ -86,15 +86,31 @@ cas:
 
 ```php
 // src/Controller/DefaultController.php
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/cas/check', name: 'cas_check')]
-public function casCheck(): Response { ... }  // El bundle intercepta esta ruta
+class DefaultController
+{
+    #[Route('/failure', name: 'failure')]    
+    public function failure(Request $request): Response
+    {
+        return new Response(
+            'Error al autenticar - Usuario: ' . $request->get('user')
+        );
+    }
 
-#[Route('/secure/logout', name: 'logout')]
-public function logout(): void {}             // Symfony maneja el logout
+    #[Route('/secure/logout', name: 'logout')]
+    public function logout()
+    {
+    }
 
-#[Route('/failure', name: 'failure')]         // Ruta de error en caso de fallo 
-public function failure(Request $request): Response { ... }
-
-
+    #[Route('/cas/check', name: 'cas_check')]
+    public function casCheck(): Response
+    {
+        // El CasAuthenticator intercepta esta ruta cuando CAS redirige con ?ticket=
+        // Si se llega aquí sin ticket, redirigir al inicio.
+        return new RedirectResponse('/');
+    }
+```
