@@ -25,7 +25,7 @@ composer require stgbundle/cas-bundle:"v8.0.x-dev"
 Nota: Debe tener instalado previamente el SecurityBundle:
 composer require symfony/security-bundle
 
-En el `config/bundles.php`, el `SecurityBundle` se deb cargar **antes** que `CasBundle`:
+En el `config/bundles.php`, el `SecurityBundle` se debe cargar **antes** que `CasBundle`:
 
 ```php
 return [
@@ -76,14 +76,11 @@ Crear el archivo `config\packages\cas.yaml`:
 
 ```yaml
 cas:
-    url:                https://sso.ejemplo.gob.ar/service-auth  # URL del servidor CAS
-    cert:               false               # Ruta al certificado CA, o false para deshabilitar verificación SSL
-    username_attribute: user                # Atributo del XML de CAS que contiene el username
-    proxy:              false               # true sólo si se usa modo proxy CAS
-    # server:           https://...        # Opcional: URL interna del servidor (si difiere de url)
-    # callback:         false              # URL del proxy callback (modo proxy)
+    url: https://dsso.santafe.gov.ar/service-auth
+    cert: false
+    username_attribute: 'cuil' 
+    proxy: false
 ```
-
 
 4). La aplicación necesita al menos estas tres rutas:
 
@@ -99,8 +96,5 @@ public function logout(): void {}             // Symfony maneja el logout
 
 #[Route('/failure', name: 'failure')]         // Ruta de error en caso de fallo 
 public function failure(Request $request): Response { ... }
-
-
-5). 
 
 
