@@ -1,0 +1,12 @@
+{
+    "bundles": {
+        "STG\\DEIM\\Security\\Bundle\\CasBundle\\CasBundle": ["all"]
+    },
+    "copy-from-recipe": {
+        "config/": "%CONFIG_DIR%/"
+    },
+    "env": {
+        "CAS_URL": "https://dsso.santafe.gov.ar/service-auth",
+        "CAS_USERNAME_ATTRIBUTE": "cuil"
+    }
+}

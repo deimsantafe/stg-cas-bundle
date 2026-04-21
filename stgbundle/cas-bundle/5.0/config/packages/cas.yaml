@@ -1,0 +1,5 @@
+cas:
+    url: '%env(CAS_URL)%'
+    cert: ~
+    username_attribute: '%env(CAS_USERNAME_ATTRIBUTE)%'
+    proxy: false

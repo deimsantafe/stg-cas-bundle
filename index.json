@@ -1,0 +1,7 @@
+{
+    "recipes": {
+        "stgbundle/cas-bundle": ["5.0"]
+    },
+    "branch": "main",
+    "is_contrib": true
+}
