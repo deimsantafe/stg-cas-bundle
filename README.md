@@ -20,7 +20,7 @@ Instalación
 
 1). Instalación desde packagist.org: https://packagist.org/packages/stgbundle/cas-bundle
 
-composer require stgbundle/cas-bundle:^5.0
+composer require stgbundle/cas-bundle:"v8.0.x-dev"
 
 Nota: Debe tener instalado previamente el SecurityBundle:
 composer require symfony/security-bundle
@@ -35,13 +35,17 @@ return [
     // ... otros bundles
 ];
 
+
+
 2). Ajustar la configuración de seguridad  — `config/packages/security.yaml`
 
 ```yaml
 security:
     providers:
         cas_users:
-            id: App\Security\CasUserProvider
+            entity:
+                class: App\Entity\Usuario
+                property: cuil
 
     firewalls:
         dev:
