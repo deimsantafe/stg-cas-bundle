@@ -69,6 +69,8 @@ security:
         - { path: ^/failure,   roles: PUBLIC_ACCESS }
         - { path: ^/,          roles: ROLE_USER }
 ```
+Nota: entry_point varía según cómo se llame el firewall ($firewallName) puede ser que sea secure, entonces se define
+entry_point: cas.authenticator.secure
 
 3). Configuración del bundle
 
