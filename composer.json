@@ -21,7 +21,8 @@
     "require": {
         "php": ">=8.2",
         "symfony/framework-bundle": "^6.4 || ^7.0",
-        "symfony/security-bundle": "^6.4 || ^7.0"
+        "symfony/security-bundle": "^6.4 || ^7.0",
+        "symfony/security-http": "^6.4.14 || ^7.1"
     },
 
 
