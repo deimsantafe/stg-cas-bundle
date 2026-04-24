@@ -2,7 +2,7 @@
     "name": "stgbundle/cas-bundle",
     "type": "symfony-bundle",
     "description": "Bundle de CAS para Symfony 7.4+",
-    "version": "5.0.0",
+    "version": "8.0.0",
     "keywords": ["CAS", "Authentication", "STG", "Symfony"],
     "homepage": "https://github.com/deimsantafe/stg-cas-bundle",
     "license": "MIT",
@@ -15,14 +15,22 @@
         {
             "name": "Zonta, Claudio",
             "email": "czonta@santafe.gov.ar"
+        },
+        {
+            "name": "Basconcel, Brisa",
+            "email": "bbasconcel@santafe.gov.ar"
         }
     ],
 
     "require": {
         "php": ">=8.2",
         "symfony/framework-bundle": "^7.4",
-        "symfony/security-bundle": "^7.4"
+        "symfony/security-bundle": "^7.4",
+        "symfony/security-http": "^7.4",
+        "symfony/http-foundation": "^7.4",
+        "symfony/http-kernel": "^7.4"
     },
+
 
     "autoload": {
         "psr-4": {
