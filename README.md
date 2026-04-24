@@ -20,7 +20,7 @@ Instalación
 
 1). Instalación desde packagist.org: https://packagist.org/packages/stgbundle/cas-bundle
 
-composer require stgbundle/cas-bundle:"v8.0.x-dev"
+composer require stgbundle/cas-bundle
 
 Nota: Debe tener instalado previamente el SecurityBundle:
 composer require symfony/security-bundle
